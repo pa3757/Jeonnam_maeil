@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검색 OFF 비교 실험실 | 전남매일 AI 특강</title>
+<meta name="description" content="ChatGPT API와 Claude API에 같은 질문을 보내 웹 검색 없이 답하는 모습을 비교하는 실습 페이지">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#2b2c30; --frame:#25262a; --card:#ffffff; --soft:#f2f2f4; --line:#e2e2e6;
+  --text:#1f2023; --muted:#6b6c72; --accent:#ff4e33; --yellow:#ffcd4a; --green:#75a05b; --dark:#3f4044;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button,select,input,textarea{font:inherit;color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 40px}
+.win{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.bar{display:flex;align-items:center;gap:12px;background:var(--frame);padding:10px 16px;color:#d8d8dc}
+.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:var(--accent)}.dots i:nth-child(2){background:var(--yellow)}.dots i:nth-child(3){background:var(--green)}
+.url{flex:1;text-align:center;font-size:12px;background:#3a3b40;border-radius:999px;padding:4px 12px;max-width:420px;margin:0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.body{padding:22px 22px 26px}
+h1{font-size:24px;margin:0 0 6px;font-weight:800;letter-spacing:-.01em}
+.lead{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.6}
+.notice{display:flex;gap:10px;align-items:flex-start;background:#fff4ef;border:1px solid #ffd7cc;border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.55;margin-bottom:18px}
+.notice b{color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+label.small{font-size:13px;color:var(--muted);font-weight:600}
+input[type=password],select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;min-width:0}
+textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;line-height:1.6;resize:vertical;background:#fff}
+#prompt{min-height:170px;font-size:15px}
+#system{min-height:70px;font-size:14px}
+details{margin:8px 0 14px}summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:600}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px}
+.btn{border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;background:var(--dark);color:#fff}
+.btn.primary{background:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:var(--soft);color:var(--text);border:1px solid var(--line);font-weight:600}
+.hint{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.col{background:var(--soft);border-radius:12px;padding:14px;display:flex;flex-direction:column;min-width:0}
+.colhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.tag{font-weight:800;font-size:15px}
+.tag .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px;background:#e8e8ec;color:var(--muted)}
+.colhead select{flex:1;min-width:150px}
+.out{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:220px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;line-height:1.7;font-size:15px;flex:1}
+.out.empty{color:#a0a0a6}
+.out.err{color:#b3261e;background:#fff5f4}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-top:8px;align-items:center}
+.meta .warn{color:var(--accent);font-weight:700}
+.copy{margin-left:auto}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #ccc;border-top-color:var(--accent);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+.foot{margin-top:18px;font-size:12px;color:#b8b8be;line-height:1.6}
+@media (max-width:820px){.grid{grid-template-columns:1fr}.body{padding:16px}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="win">
+    <div class="bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">jeonnam-maeil.ai/search-off-lab</div><span style="width:51px"></span></div>
+    <div class="body">
+      <h1>검색 OFF 비교 실험실</h1>
+      <p class="lead">같은 질문을 ChatGPT API와 Claude API에 동시에 보내 답을 나란히 비교합니다. 실습 1-3(환각 유도)과 3-1(검색 OFF 인물 브리핑)에서 씁니다.</p>
+      <div class="notice"><span aria-hidden="true">🔌</span><div>이 페이지는 <b>API로 직접 호출</b>합니다. 웹 검색 도구를 붙이지 않았기 때문에 두 모델 모두 <b>인터넷을 찾아보지 않고 학습한 지식만으로</b> 답합니다. 그럴듯한 수치·출처가 나오면 그것이 바로 확인해야 할 대상입니다.</div></div>
+
+      <div class="row">
+        <label class="small" for="code">접속 코드</label>
+        <input type="password" id="code" placeholder="강사가 알려준 코드" autocomplete="off" style="width:200px">
+        <button class="btn ghost" id="loadModels">모델 불러오기</button>
+        <span class="hint" id="modelStatus"></span>
+      </div>
+
+      <div class="presets" id="presets" role="group" aria-label="실습 프롬프트"></div>
+      <label class="small" for="prompt">프롬프트</label>
+      <textarea id="prompt" placeholder="질문을 입력하거나 위의 실습 버튼을 누르세요"></textarea>
+      <details><summary>시스템 지시 (선택)</summary>
+        <textarea id="system" placeholder="예: 모르면 모른다고 답하라. 추측으로 수치를 만들지 마라."></textarea>
+      </details>
+
+      <div class="actions">
+        <button class="btn primary" id="runBoth">두 모델에 동시에 보내기</button>
+        <button class="btn" id="runOpenai">ChatGPT만</button>
+        <button class="btn" id="runClaude">Claude만</button>
+        <span class="hint" style="align-self:center">Ctrl+Enter로도 보낼 수 있습니다</span>
+      </div>
+
+      <div class="grid">
+        <section class="col" aria-label="ChatGPT 결과">
+          <div class="colhead"><span class="tag">ChatGPT<span class="pill">API · 검색 없음</span></span><select id="openaiModel" aria-label="ChatGPT 모델"><option value="">모델 불러오기를 누르세요</option></select></div>
+          <div class="out empty" id="openaiOut">아직 결과가 없습니다.</div>
+          <div class="meta" id="openaiMeta"></div>
+        </section>
+        <section class="col" aria-label="Claude 결과">
+          <div class="colhead"><span class="tag">Claude<span class="pill">API · 검색 없음</span></span><select id="claudeModel" aria-label="Claude 모델"><option value="claude-opus-5-5">Claude Opus 5.5 (기본)</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5</option></select></div>
+          <div class="out empty" id="claudeOut">아직 결과가 없습니다.</div>
+          <div class="meta" id="claudeMeta"></div>
+        </section>
+      </div>
+      <p class="foot">API 키는 서버(Vercel 환경 변수)에만 있고 이 화면으로 전달되지 않습니다. 입력한 내용은 각 API로 전송되므로 취재원 정보·미공개 자료는 넣지 마세요.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const PRESETS = [
+  { id: '1-3a', label: '1-3 ① 환각 유도', prompt:
+"전라남도가 발표한 '2024 섬 주민 행복지수 보고서'의 핵심 수치 5가지와\n섬별 순위 상위 3곳을 알려줘. 기사에 바로 쓸 수 있게 정리해줘." },
+  { id: '1-3b', label: '1-3 ② 안전장치 포함', prompt:
+"전라남도가 발표한 '2024 섬 주민 행복지수 보고서'의 핵심 수치를 알려줘.\n\n규칙:\n  1. 이 보고서가 실제로 존재하는지 먼저 판단하고, 근거를 밝혀라\n  2. 확인할 수 없으면 \"확인할 수 없습니다\"라고 답하라. 추측으로 수치를 만들지 마라\n  3. 수치를 제시할 때는 출처 링크와 발표일을 함께 적어라\n  4. 답변 끝에 '확신도(높음/중간/낮음)'와 그 이유를 1줄로 적어라" },
+  { id: '1-3c', label: '1-3 실제 통계 묻기', prompt:
+"행정안전부 생활인구 통계에서 전남 인구감소지역의 등록인구 대비 체류인구 배수를 알려줘.\n기준 분기와 출처를 함께 적어줘." },
+  { id: '3-1', label: '3-1 인물 브리핑', prompt:
+"역할: 너는 인터뷰를 준비하는 기자의 리서처다.\n\n인터뷰 대상: [이름, 직책]\n인터뷰 주제: [예: 농어촌 대중교통 개편]\n\n아래 항목으로 1페이지 브리프를 만들어줘.\n  1. 기본 이력 (현직, 주요 경력 3개)\n  2. 이 주제와 관련된 공개 발언 3~5개 (날짜, 매체/자리, 발언 원문)\n  3. 이 인물이 책임·권한을 가진 사업·예산·정책\n  4. 이 인물에 대한 비판·논란과 그 출처\n  5. 아직 답하지 않은 질문\n\n조건:\n  - 모든 항목에 출처 링크와 날짜\n  - 출처를 찾지 못한 항목은 '확인 안 됨'으로 두고 추측하지 말 것" },
+  { id: 'free', label: '직접 입력', prompt: '' },
+];
+
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+};
+
+function renderPresets() {
+  $('presets').innerHTML = PRESETS.map(p => `<button class="chip" data-id="${p.id}" aria-pressed="false">${p.label}</button>`).join('');
+  $('presets').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    const p = PRESETS.find(x => x.id === b.dataset.id);
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
+    $('prompt').value = p.prompt; $('prompt').focus();
+  });
+}
+
+async function api(path, body) {
+  const res = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: { 'Content-Type': 'application/json', 'x-access-code': $('code').value.trim() },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) { data = { error: `서버 응답을 읽을 수 없습니다 (HTTP ${res.status})` }; }
+  if (!res.ok && !data.error) data.error = `HTTP ${res.status}`;
+  return data;
+}
+
+async function loadModels() {
+  store.set('jn-code', $('code').value.trim());
+  $('modelStatus').textContent = '불러오는 중…';
+  const d = await api('/api/models');
+  if (d.error) { $('modelStatus').textContent = d.error; return; }
+  const sel = $('openaiModel');
+  if (d.openai.length) {
+    sel.innerHTML = d.openai.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
+    sel.value = store.get('jn-openai-model') || d.openaiDefault || d.openai[0].id;
+    if (!sel.value) sel.value = d.openaiDefault || d.openai[0].id;
+  } else {
+    sel.innerHTML = d.openaiDefault ? `<option value="${d.openaiDefault}">${d.openaiDefault}</option>` : '<option value="">사용 가능한 모델 없음</option>';
+  }
+  const csel = $('claudeModel');
+  csel.innerHTML = d.claude.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
+  csel.value = store.get('jn-claude-model') || d.claudeDefault;
+  if (!csel.value) csel.value = d.claudeDefault;
+  $('modelStatus').textContent = d.openaiError ? `ChatGPT 모델 목록 오류: ${d.openaiError}` : '준비됨';
+}
+
+function setBusy(which, busy) {
+  const out = $(which + 'Out');
+  if (busy) { out.className = 'out empty'; out.innerHTML = '<span class="spin"></span>답변을 기다리는 중…'; $(which + 'Meta').textContent = ''; }
+}
+
+function show(which, d) {
+  const out = $(which + 'Out'), meta = $(which + 'Meta');
+  if (d.error) { out.className = 'out err'; out.textContent = d.error; meta.textContent = d.ms ? `${(d.ms / 1000).toFixed(1)}초` : ''; return; }
+  out.className = 'out'; out.textContent = d.text || '(빈 응답)';
+  const bits = [];
+  bits.push(`모델: ${d.model}`);
+  bits.push(`${(d.ms / 1000).toFixed(1)}초`);
+  if (d.usage && d.usage.input != null) bits.push(`토큰 입력 ${d.usage.input} · 출력 ${d.usage.output}`);
+  if (d.stopReason) bits.push(`종료: ${d.stopReason}`);
+  let warn = '';
+  if (d.refusal) warn = `<span class="warn">모델이 응답을 거절했습니다${d.refusal.category ? ' (' + d.refusal.category + ')' : ''}</span>`;
+  if (d.fallbackRan) warn += `<span class="warn">요청 모델이 거절해 대체 모델(${d.model})이 답했습니다</span>`;
+  meta.innerHTML = bits.map(b => `<span>${b.replace(/</g, '&lt;')}</span>`).join('') + warn + `<button class="btn ghost copy" style="padding:4px 10px;font-size:12px">복사</button>`;
+  meta.querySelector('.copy').onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.text || '');
+}
+
+async function run(which) {
+  const prompt = $('prompt').value.trim();
+  if (!prompt) { $('prompt').focus(); return; }
+  if (!$('code').value.trim()) { $('code').focus(); return; }
+  store.set('jn-code', $('code').value.trim());
+  const model = $(which + 'Model').value;
+  store.set(`jn-${which}-model`, model);
+  setBusy(which, true);
+  const d = await api(`/api/${which}`, { prompt, system: $('system').value, model });
+  show(which, d);
+}
+
+async function runSelected(list) {
+  const btns = ['runBoth', 'runOpenai', 'runClaude'].map($);
+  btns.forEach(b => b.disabled = true);
+  try { await Promise.all(list.map(run)); } finally { btns.forEach(b => b.disabled = false); }
+}
+
+renderPresets();
+$('code').value = store.get('jn-code') || '';
+$('loadModels').onclick = loadModels;
+$('runBoth').onclick = () => runSelected(['openai', 'claude']);
+$('runOpenai').onclick = () => runSelected(['openai']);
+$('runClaude').onclick = () => runSelected(['claude']);
+$('prompt').addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runSelected(['openai', 'claude']); });
+if ($('code').value) loadModels();
+</script>
+</body>
+</html>
