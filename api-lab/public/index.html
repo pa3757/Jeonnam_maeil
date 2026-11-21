@@ -49,6 +49,7 @@ details{margin:8px 0 14px}summary{cursor:pointer;font-size:13px;color:var(--mute
 .tag{font-weight:800;font-size:15px}
 .tag .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px;background:#e8e8ec;color:var(--muted)}
 .colhead select{flex:1;min-width:150px}
+.custom{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:-2px 0 10px;width:100%;font-size:14px}
 .out{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:220px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;line-height:1.7;font-size:15px;flex:1}
 .out.empty{color:#a0a0a6}
 .out.err{color:#b3261e;background:#fff5f4}
@@ -93,7 +94,8 @@ details{margin:8px 0 14px}summary{cursor:pointer;font-size:13px;color:var(--mute
 
       <div class="grid">
         <section class="col" aria-label="ChatGPT 결과">
-          <div class="colhead"><span class="tag">ChatGPT<span class="pill">API · 검색 없음</span></span><select id="openaiModel" aria-label="ChatGPT 모델"><option value="">모델 불러오기를 누르세요</option></select></div>
+          <div class="colhead"><span class="tag">ChatGPT<span class="pill">API · 검색 없음</span></span><select id="openaiModel" aria-label="ChatGPT 모델"></select></div>
+          <input id="openaiCustom" class="custom" type="text" placeholder="모델 ID 직접 입력 (예: gpt-5-mini)" aria-label="ChatGPT 모델 ID 직접 입력" hidden>
           <div class="out empty" id="openaiOut">아직 결과가 없습니다.</div>
           <div class="meta" id="openaiMeta"></div>
         </section>
@@ -121,6 +123,14 @@ const PRESETS = [
   { id: 'free', label: '직접 입력', prompt: '' },
 ];
 
+const OPENAI_BUILTIN = [
+  { id: 'gpt-5.5', label: 'GPT-5.5' },
+  { id: 'gpt-5', label: 'GPT-5' },
+  { id: 'gpt-5-mini', label: 'GPT-5 mini' },
+  { id: 'gpt-5-nano', label: 'GPT-5 nano' },
+  { id: 'gpt-5-chat-latest', label: 'GPT-5 Chat (ChatGPT 기본 모델 별칭)' },
+];
+const CUSTOM = '__custom__';
 const $ = (id) => document.getElementById(id);
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -154,19 +164,41 @@ async function loadModels() {
   $('modelStatus').textContent = '불러오는 중…';
   const d = await api('/api/models');
   if (d.error) { $('modelStatus').textContent = d.error; return; }
-  const sel = $('openaiModel');
-  if (d.openai.length) {
-    sel.innerHTML = d.openai.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
-    sel.value = store.get('jn-openai-model') || d.openaiDefault || d.openai[0].id;
-    if (!sel.value) sel.value = d.openaiDefault || d.openai[0].id;
-  } else {
-    sel.innerHTML = d.openaiDefault ? `<option value="${d.openaiDefault}">${d.openaiDefault}</option>` : '<option value="">사용 가능한 모델 없음</option>';
-  }
+  renderOpenaiModels(d.openai, d.openaiDefault);
   const csel = $('claudeModel');
   csel.innerHTML = d.claude.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
   csel.value = store.get('jn-claude-model') || d.claudeDefault;
   if (!csel.value) csel.value = d.claudeDefault;
   $('modelStatus').textContent = d.openaiError ? `ChatGPT 모델 목록 오류: ${d.openaiError}` : '준비됨';
+}
+
+function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+// Build the ChatGPT dropdown: account models (when loaded) + built-in list + direct input.
+function renderOpenaiModels(accountModels, preferred) {
+  const sel = $('openaiModel');
+  const account = accountModels || [];
+  const accountIds = new Set(account.map(m => m.id));
+  const builtin = OPENAI_BUILTIN.filter(m => !accountIds.has(m.id));
+  let html = '';
+  if (account.length) html += `<optgroup label="내 계정에서 사용 가능">${account.map(m => `<option value="${esc(m.id)}">${esc(m.label)}</option>`).join('')}</optgroup>`;
+  if (builtin.length) html += `<optgroup label="${account.length ? '기본 목록 (계정에서 확인 안 됨)' : '기본 목록'}">${builtin.map(m => `<option value="${esc(m.id)}">${esc(m.label)}</option>`).join('')}</optgroup>`;
+  html += `<option value="${CUSTOM}">직접 입력…</option>`;
+  sel.innerHTML = html;
+  const saved = store.get('jn-openai-model');
+  const want = saved || preferred || (account[0] && account[0].id) || OPENAI_BUILTIN[0].id;
+  if ([...sel.options].some(o => o.value === want)) sel.value = want;
+  else { sel.value = CUSTOM; $('openaiCustom').value = want; }
+  syncCustom();
+}
+function syncCustom() {
+  const custom = $('openaiModel').value === CUSTOM;
+  $('openaiCustom').hidden = !custom;
+  if (custom) $('openaiCustom').value = $('openaiCustom').value || store.get('jn-openai-custom') || '';
+}
+function selectedModel(which) {
+  if (which === 'openai' && $('openaiModel').value === CUSTOM) return $('openaiCustom').value.trim();
+  return $(which + 'Model').value;
 }
 
 function setBusy(which, busy) {
@@ -195,8 +227,10 @@ async function run(which) {
   if (!prompt) { $('prompt').focus(); return; }
   if (!$('code').value.trim()) { $('code').focus(); return; }
   store.set('jn-code', $('code').value.trim());
-  const model = $(which + 'Model').value;
-  store.set(`jn-${which}-model`, model);
+  const model = selectedModel(which);
+  if (!model) { $('openaiCustom').focus(); return; }
+  store.set(`jn-${which}-model`, $(which + 'Model').value);
+  if (which === 'openai' && $('openaiModel').value === CUSTOM) store.set('jn-openai-custom', model);
   setBusy(which, true);
   const d = await api(`/api/${which}`, { prompt, system: $('system').value, model });
   show(which, d);
@@ -209,6 +243,9 @@ async function runSelected(list) {
 }
 
 renderPresets();
+renderOpenaiModels([], null);
+$('openaiModel').addEventListener('change', () => { syncCustom(); store.set('jn-openai-model', $('openaiModel').value); });
+$('claudeModel').addEventListener('change', () => store.set('jn-claude-model', $('claudeModel').value));
 $('code').value = store.get('jn-code') || '';
 $('loadModels').onclick = loadModels;
 $('runBoth').onclick = () => runSelected(['openai', 'claude']);

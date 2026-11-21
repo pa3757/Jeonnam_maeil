@@ -5,7 +5,7 @@ ChatGPT API와 Claude API에 같은 프롬프트를 보내 **웹 검색 없이**
 - `public/index.html` — 화면 (프리셋: 1-3 환각 유도·안전장치·실제 통계, 3-1 인물 브리핑)
 - `api/claude.js` — Anthropic SDK, Messages API (도구 없음 = 검색 없음)
 - `api/openai.js` — OpenAI SDK, Responses API (도구 없음 = 검색 없음)
-- `api/models.js` — 모델 목록 (Claude 고정 목록, OpenAI는 계정에서 조회)
+- `api/models.js` — 모델 목록 (Claude 고정 목록, ChatGPT는 계정 조회 결과 + 기본 목록 + 직접 입력)
 
 ## Vercel 환경 변수 (필수)
 

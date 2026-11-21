@@ -15,6 +15,10 @@ export default async function handler(req, res) {
     res.status(400).json({ provider: 'openai', error: 'ChatGPT 모델을 선택하세요.' });
     return;
   }
+  if (!/^[A-Za-z0-9._:-]{1,80}$/.test(model)) {
+    res.status(400).json({ provider: 'openai', error: '모델 ID 형식이 올바르지 않습니다.' });
+    return;
+  }
   if (/search|realtime|audio|tts|transcribe|image|embedding/i.test(model)) {
     res.status(400).json({ provider: 'openai', error: '검색·음성·이미지 전용 모델은 이 테스트에서 쓰지 않습니다.' });
     return;
