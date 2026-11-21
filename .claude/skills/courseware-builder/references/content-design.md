@@ -9,8 +9,14 @@
 - **HTML viewer** = public, image-only copy of the deck for sharing.
 
 ## Session skeleton (50-min session, demo style)
-~10 min concepts (4-6 slides) → 1 "PRACTICE" slide listing the session's exercises →
-~35 min exercises (5 × 6-8 min) → ~5 min Q&A. If the user wants "as much practice as
+Interleave instead of "all concepts, then all exercises": 1-2 concept slides → a
+**practice transition slide** → the matching 1-3 exercises in Notion → back to the deck.
+A session has 2-4 such switches, so each concept is practiced while it's fresh.
+Transition slide = the session's PRACTICE list slide duplicated per switch: current
+exercises highlighted (▶, accent color), finished ones ✓ and dimmed, upcoming dimmed.
+Slides stay lean: no minutes/schedules or "총 200분 · 실습 20개" stat cards on slides, the
+cover shows only the course title and the closing slide only "감사합니다"; timing lives
+in the speaker notes and the instructor guide. If the user wants "as much practice as
 possible", keep concept slides lean and give every topic in the syllabus at least one
 exercise. Each exercise: one tool or a cross-check between tools, 1-2 prompts, a visible
 "aha" moment (difference between Before/After, a caught error, a hallucination).

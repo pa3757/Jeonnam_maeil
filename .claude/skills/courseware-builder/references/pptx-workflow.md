@@ -99,5 +99,8 @@ Every slide gets two blocks (`Deck.notes` formats them):
   sentences, one idea per line. Concept slides ~150-400 chars (1-2 min); dividers and
   practice-list slides 2-4 sentences ending with a hand-off ("노션에서 '실습 1-1'을 열어 주세요").
   Explain the "why", give the concrete example, end with the bridge to the next slide/exercise.
+- On practice transition slides the memo starts with
+  `▶ 노션 전환: 실습 1-1, 1-2 (약 15분) → 끝나면 슬라이드 10`, and the script ends with
+  "노션에서 '실습 1-1'을 열어 주세요". Compute slide numbers from the final order.
 - **【진행 메모】** timing ([3분]), what to emphasize, which exercise it sets up, cautions
   (feature names change; check the day before).

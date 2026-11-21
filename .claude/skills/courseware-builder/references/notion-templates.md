@@ -17,7 +17,7 @@ ADD COLUMN "사용 도구" MULTI_SELECT('<도구1>':green, '<도구2>':orange);
 ADD COLUMN "소요 시간(분)" NUMBER; ADD COLUMN "한 줄 요약" RICH_TEXT
 ```
 Instructor DB: same 교시/사용 도구/순서/소요 시간, 유형 = '운영'/'실습'/'사후 과제', plus
-`"관련 슬라이드" RICH_TEXT; "사전 준비" RICH_TEXT; "리허설 완료" CHECKBOX;
+`"관련 슬라이드" RICH_TEXT; "사전 준비" RICH_TEXT; "리허설 완료" CHECKBOX; "돌아갈 슬라이드" NUMBER (deck slide to resume after the exercise);
 "공유용 페이지" RELATION('<shared data source UUID>')`.
 
 Gotcha: RELATION takes the bare UUID, not the `collection://` URL.
@@ -65,7 +65,7 @@ deliverable), field checklists.
 
 ### Instructor "00. 강의 운영 가이드"
 Overview callout linking the shared guide; minute-by-minute timeline table per session
-(slide ranges + exercise order + minutes); "전날 세팅 체크리스트" (accounts/features,
+(concept slides → 전환 N → return slide, with exercise minutes); "전날 세팅 체크리스트" (accounts/features,
 files to prepare, equipment); 운영 원칙; 예상 질문 → 답변 방향 table; which exercises to
 cut first if late.
 
