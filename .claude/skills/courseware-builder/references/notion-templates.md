@@ -82,5 +82,12 @@ Properties: 관련 슬라이드, 사전 준비, 공유용 페이지 (relation to
 ```
 Keep prompts only on the shared page (single source of truth); the instructor page links to it.
 
+**Prompts must be paste-ready.** The instructor and learners copy a block and press enter,
+so never leave a placeholder for something the course already fixes: embed the sample
+material (press release, transcript, memo) and the claim to verify directly inside the
+prompt block, labeled "실습용 가상 자료". Keep placeholders only for what truly varies
+per person or comes from an earlier step (their own article, the previous answer, a
+research result), and write them as `[← 앞 단계 결과 붙여넣기]` so it's obvious.
+
 ### Instructor "99. 마무리 · 사후 과제 해설"
 Wrap-up flow, rubric table (good result vs common mistakes per task), post-class checklist.
