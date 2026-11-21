@@ -33,6 +33,33 @@ tools; say what you substituted in the final report. Do this for implicit cases 
   provoke hallucination, tell the instructor to verify it doesn't exist the day before.
 - Personal data in samples: obviously fake (홍길동, 010-0000-0000).
 
+## Pair every exercise with a real-material comparison
+Fictional samples are "practice problems" with planted answers; real public material is
+the "live" case where the answer is unknown. Every exercise page ends with a
+**"실제 자료로 비교해 보기"** section that reruns the same prompt on real public material
+and compares the two in a table. What makes a good real comparison:
+- **A real "answer key" exists**: official 개정이유 / 신구법비교 for a law summary, an
+  official bilingual text for translation, a published article for a draft, a photo
+  whose caption states place and date, a court's already-anonymized ruling for
+  de-identification, a published industry guideline for a policy draft.
+- **Real data shows a failure the fictional one can't**: e.g. the same statistic ("4.8배")
+  reported for different quarters and scopes → time-point errors; a real photo judged
+  "AI-generated" → false positives; search OFF vs ON for a real person's career.
+- **Direct links, not "go find it"**: put a clickable link to the actual article,
+  law page, list page or portal in the shared page so learners can open it in class.
+  Find them with web search; use only URLs that appear in search results, never
+  constructed or remembered ones (exception: stable official URL patterns such as
+  `https://www.law.go.kr/법령/<법령명>`). If you can't open the pages from your
+  environment, say so on the instructor page and add "click every link the day before"
+  to the prep checklist.
+- Facts you learned from search snippets go on the **instructor** page as "사전 검색 기준,
+  원문 확인 필요" with their source links; the shared page carries the links and the task,
+  not the answers.
+- Real material is public only: no embargoed or source material, even for comparison.
+- Live time: demo one real comparison per session (★ on the instructor page, ~+4 min),
+  shorten another exercise to pay for it, and leave the rest as homework. Add the ★ table
+  and a one-sentence takeaway per session to the instructor guide.
+
 ## Claims about tools
 Product features, menu names and plan limits change. Phrase as "수업 시점 기준",
 put "전날 강사 계정에서 확인" on the instructor page, and give a fallback for each

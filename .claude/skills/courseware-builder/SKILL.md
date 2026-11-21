@@ -38,7 +38,9 @@ Track these as tasks; each phase depends on the plan from phase 1.
 2. Write a plan in the scratchpad: per session → concept slides (each mapped to a template
    layout, `references/pptx-workflow.md` §2) and 4-6 exercises (title, tool(s), minutes,
    sample material needed). Apply `references/content-design.md`: exclusions, fictional
-   vs. instructor-provided materials, practice-heavy pacing.
+   vs. instructor-provided materials, practice-heavy pacing, and a **real-material
+   comparison** for every exercise (search for real public sources now and keep their
+   links for the Notion pages).
 3. Fix the global numbering now: slide order, exercise ids (1-1 … 4-5), Notion 순서.
    Give the user a 3-4 line status (layouts found, deck size, exercise count) and continue;
    don't wait for approval unless an input is ambiguous.

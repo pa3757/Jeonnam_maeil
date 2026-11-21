@@ -53,7 +53,11 @@ sections, comparison tables, prompts in ```bash blocks preceded by
 ## 3. 진행 순서           numbered steps
 ## 4. 프롬프트            ### 프롬프트 ① … ② … (each in ```bash, with role / context / format / constraints)
 ## 5. 확인 포인트          - [ ] checklist (+ result-recording table if the exercise compares outputs)
+## 6. 실제 자료로 비교해 보기  callout (why compare) + "실제 자료 바로가기" links + method
+                           + 비교 table (가상 vs 실제) + 관전 포인트 (see content-design.md)
 ```
+Add a "실제 자료 비교 실습 안내" section to the shared guide: table of material type →
+direct link → exercises that use it.
 
 ### Shared "99. 사후 실습 과제 · 점검 체크리스트"
 Core principles callout, 2-3 homework tasks (target, steps referencing exercise numbers,
@@ -73,6 +77,8 @@ Properties: 관련 슬라이드, 사전 준비, 공유용 페이지 (relation to
 ## 2. 예상 결과 / 관전 포인트 (what the sample data is designed to surface)
 ## 3. 트러블슈팅          table | 상황 | 대응 | + 축약 버전 (N분)
 ## 4. 예상 질문
+## 5. (★) 실제 자료 비교    prep (what to download), candidate material with links and
+                           "사전 검색 기준, 원문 확인 필요" facts, +N min, 멘트, which exercise to shorten
 ```
 Keep prompts only on the shared page (single source of truth); the instructor page links to it.
 
